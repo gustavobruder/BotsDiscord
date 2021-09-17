@@ -1,15 +1,8 @@
 const { Client, MessageEmbed } = require('discord.js');
 const { token, idServidor, prefixo } = require('../config.json');
+const { formatarData, gerarNumeroRandom, cores } = require('./utils');
 
 const bot = new Client();
-
-const formatarData = (padrao, data) => {
-    var componentes = 'YYYY:MM:DD:HH:mm:ss'.split(':')
-    data = new Date(data || Date.now() - new Date().getTimezoneOffset() * 6e4)
-
-    return data.toISOString().split(/[-:.TZ]/)
-        .reduce((template, item, i) => template.split(componentes[i]).join(item), padrao)
-};
 
 bot.on('ready', () => {
     const servidor = bot.guilds.cache.get(idServidor);
@@ -19,6 +12,35 @@ bot.on('ready', () => {
 bot.on('message', async mensagem => {
     const conteudo = mensagem.content;
     const canal = mensagem.channel;
+
+    if(conteudo.startsWith(`${prefixo}sorte`)){
+        const sorte = gerarNumeroRandom(1, 100);
+
+        const resposta = new MessageEmbed()
+        .setColor(cores[gerarNumeroRandom(0, 8)])
+        .setTitle(`${mensagem.author.username}`)
+        .setDescription(`Você está com ${sorte}% de sorte hoje.`)
+
+        canal.send(resposta);
+    }
+
+    if(conteudo.startsWith(`${prefixo}avatar`)){
+        const resposta = new MessageEmbed()
+        .setColor(cores[gerarNumeroRandom(0, 8)])
+        .setTitle(`${mensagem.author.username}`)
+        .setImage(mensagem.author.displayAvatarURL());
+
+        canal.send(resposta);
+    }
+
+    if (conteudo.startsWith(`${prefixo}ping`)) {
+        const resposta = new MessageEmbed()
+        .setColor(cores[gerarNumeroRandom(0, 8)])
+        .setTitle(`${mensagem.author.username}`)
+        .setDescription(`Pong! Your ping is ${Date.now() - mensagem.createdTimestamp} ms`);
+
+        canal.send(resposta);
+    }
 
     if (conteudo.startsWith(`${prefixo}bot`)) {
         const resposta = new MessageEmbed()
@@ -44,6 +66,9 @@ bot.on('message', async mensagem => {
         .setDescription(`Aqui estão algumas informações sobre o bot ${bot.user.username}`)
         .setThumbnail(mensagem.guild.iconURL())
         .addField(`01# - ${prefixo}bot`, 'Mostra algumas informações do bot', false)
+        .addField(`02# - ${prefixo}sorte`, 'Mostra com quanta sorte você está hoje', false)
+        .addField(`03# - ${prefixo}avatar`, 'Mostra o avatar de quem executar', false)
+        .addField(`04# - ${prefixo}ping`, 'Mostra o ping do bot', false)
         .setTimestamp()
         .setFooter('Copyright © | Todos os direitos reservados ', 'https://i.imgur.com/wSTFkRM.png');
 

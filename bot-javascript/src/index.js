@@ -5,6 +5,7 @@ const path = require('path');
 
 const bot = new Client();
 bot.commands = new Collection();
+bot.queues = new Map();
 
 const arquivosComandos = fs
     .readdirSync(path.join(__dirname, "./commands"))

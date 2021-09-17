@@ -1,8 +1,19 @@
-const { Client, MessageEmbed } = require('discord.js');
+const { Client, Collection } = require('discord.js');
 const { token, idServidor, prefixo } = require('../config.json');
-const { formatarData, gerarNumeroRandom, cores } = require('./utils');
+const fs = require('fs');
+const path = require('path');
 
 const bot = new Client();
+bot.commands = new Collection();
+
+const arquivosComandos = fs
+    .readdirSync(path.join(__dirname, "./commands"))
+    .filter(arquivo => arquivo.endsWith(".js"));
+
+for (var arquivoComando of arquivosComandos) {
+    const comando = require(`./commands/${arquivoComando}`);
+    bot.commands.set(comando.nome, comando);
+}
 
 bot.on('ready', () => {
     const servidor = bot.guilds.cache.get(idServidor);
@@ -11,72 +22,17 @@ bot.on('ready', () => {
 
 bot.on('message', async mensagem => {
     const conteudo = mensagem.content;
-    const canal = mensagem.channel;
 
     if (mensagem.author.bot) return;
     if (!conteudo.startsWith(prefixo)) return;
 
-    if(conteudo.startsWith(`${prefixo}sorte`)){
-        const sorte = gerarNumeroRandom(1, 100);
+    const args = conteudo.slice(prefixo.length).split(" ");
+    const nomeComando = args.shift();
+    const comando = bot.commands.get(nomeComando);
 
-        const resposta = new MessageEmbed()
-        .setColor(cores[gerarNumeroRandom(0, 8)])
-        .setTitle(`${mensagem.author.username}`)
-        .setDescription(`Você está com ${sorte}% de sorte hoje.`)
+    if (comando == null) return;
 
-        canal.send(resposta);
-    }
-
-    if(conteudo.startsWith(`${prefixo}avatar`)){
-        const resposta = new MessageEmbed()
-        .setColor(cores[gerarNumeroRandom(0, 8)])
-        .setTitle(`${mensagem.author.username}`)
-        .setImage(mensagem.author.displayAvatarURL());
-
-        canal.send(resposta);
-    }
-
-    if (conteudo.startsWith(`${prefixo}ping`)) {
-        const resposta = new MessageEmbed()
-        .setColor(cores[gerarNumeroRandom(0, 8)])
-        .setTitle(`${mensagem.author.username}`)
-        .setDescription(`Pong! Your ping is ${Date.now() - mensagem.createdTimestamp} ms`);
-
-        canal.send(resposta);
-    }
-
-    if (conteudo.startsWith(`${prefixo}bot`)) {
-        const resposta = new MessageEmbed()
-        .setColor('#3399ff')
-        .setAuthor('🤖 Minhas informações')
-        .setTitle('Fala meu paçero!')
-        .setDescription('Olá eu sou o mais novo bot criado pelo Gustavo!')
-        .setThumbnail(bot.user.displayAvatarURL())
-        .addField('**Meu nick**', bot.user.username)
-        .addField('**Meu ID**', bot.user.id)
-        .addField('**Criado em**', formatarData('DD/MM/YYYY, às HH:mm:ss', bot.user.createdAt))
-        .setFooter(`🛡 2021 © ${bot.user.username}.`)
-        .setTimestamp();
-
-        canal.send(resposta);
-    }
-
-    if (conteudo.startsWith(`${prefixo}help`)) {
-        const resposta = new MessageEmbed()
-        .setColor('#0099ff')
-        .setAuthor(bot.user.username, bot.user.displayAvatarURL())
-        .setTitle('Informações gerais!')
-        .setDescription(`Aqui estão algumas informações sobre o bot ${bot.user.username}`)
-        .setThumbnail(mensagem.guild.iconURL())
-        .addField(`01# - ${prefixo}bot`, 'Mostra algumas informações do bot', false)
-        .addField(`02# - ${prefixo}sorte`, 'Mostra com quanta sorte você está hoje', false)
-        .addField(`03# - ${prefixo}avatar`, 'Mostra o avatar de quem executar', false)
-        .addField(`04# - ${prefixo}ping`, 'Mostra o ping do bot', false)
-        .setTimestamp()
-        .setFooter('Copyright © | Todos os direitos reservados ', 'https://i.imgur.com/wSTFkRM.png');
-
-        canal.send(resposta);
-    }
+    comando.execute(bot, mensagem, args);
 });
 
 bot.login(token);

@@ -13,6 +13,9 @@ bot.on('message', async mensagem => {
     const conteudo = mensagem.content;
     const canal = mensagem.channel;
 
+    if (mensagem.author.bot) return;
+    if (!conteudo.startsWith(prefixo)) return;
+
     if(conteudo.startsWith(`${prefixo}sorte`)){
         const sorte = gerarNumeroRandom(1, 100);
 

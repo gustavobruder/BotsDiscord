@@ -13,17 +13,22 @@ const execute = (bot, msg, args) => {
     };
 
     const pesquisa = args.join(" ");
-    console.log('Pesquisa: ', pesquisa);
+    console.log('Pesquisa:', pesquisa);
 
     try {
         yts(pesquisa, (error, result) => {
             if (error) {
                 throw error;
+            } else if (result && result.videos.length > 0) {
+                const musica = result.videos[0];
+                playSong(bot, msg, musica);
             } else {
-                if (result && result.videos.length > 0) {
-                    const musica = result.videos[0];
-                    playSong(bot, msg, musica);
-                }
+                const resposta = new MessageEmbed()
+                .setColor('#ffe44c')
+                .setTitle('Aviso!')
+                .setDescription('Sem resultados encontrados para sua pesquisa');
+
+                msg.channel.send(resposta);
             }
         });
     } catch (ex) {
@@ -32,9 +37,14 @@ const execute = (bot, msg, args) => {
 };
 
 const playSong = async (bot, msg, song) => {
-    if (!song) return;
-
     let queue = bot.queues.get(msg.member.guild.id);
+
+    if (!song) {
+        if (queue) {
+            queue.connection.disconnect();
+            bot.queues.delete(msg.member.guild.id);
+        }
+    };
 
     if (!queue) {
         const conn = await msg.member.voice.channel.join();
@@ -44,10 +54,17 @@ const playSong = async (bot, msg, song) => {
             dispatcher: null,
             songs: [song]
         }
+        const stream = await ytdl(song.url, { highWaterMark: 1 << 25, filter: 'audioonly' });
+        queue.dispatcher = await queue.connection.play(stream, { type: 'opus' });
+        queue.dispatcher.on("finish", () => {
+            queue.songs.shift();
+            playSong(bot, msg, queue.songs[0]);
+        });
+        bot.queues.set(msg.member.guild.id, queue);
+    } else {
+        queue.songs.push(song);
+        bot.queues.set(msg.member.guild.id);
     }
-    const stream = await ytdl(song.url);
-    queue.dispatcher = await queue.connection.play(stream, { type: 'opus' });
-    bot.queues.set(msg.member.guild.id, queue);
 };
 
 module.exports = {

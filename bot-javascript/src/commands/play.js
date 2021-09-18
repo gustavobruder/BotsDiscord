@@ -10,6 +10,7 @@ const execute = (bot, msg, args) => {
         .setDescription('Você precisa estar em um canal de voz para reproduzir uma música');
 
         msg.channel.send(resposta);
+        return;
     };
 
     const pesquisa = args.join(" ");
@@ -43,6 +44,7 @@ const playSong = async (bot, msg, song) => {
         if (queue) {
             queue.connection.disconnect();
             bot.queues.delete(msg.member.guild.id);
+            return;
         }
     };
 

@@ -14,7 +14,7 @@ const execute = (bot, msg, args) => {
     };
 
     const pesquisa = args.join(" ");
-    console.log('Pesquisa:', pesquisa);
+    console.log('Pesquisando música:', pesquisa);
 
     try {
         yts(pesquisa, (error, result) => {
@@ -24,6 +24,8 @@ const execute = (bot, msg, args) => {
                 const musica = result.videos[0];
                 playSong(bot, msg, musica);
             } else {
+                console.warn('Sem resultados encontrados para:', pesquisa);
+
                 const resposta = new MessageEmbed()
                 .setColor('#ffe44c')
                 .setTitle('Aviso!')
@@ -33,7 +35,7 @@ const execute = (bot, msg, args) => {
             }
         });
     } catch (ex) {
-        console.error(ex);
+        console.error('Erro ao tocar música:', ex);
     }
 };
 

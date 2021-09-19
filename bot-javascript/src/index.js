@@ -1,5 +1,6 @@
 const { Client, Collection } = require('discord.js');
 const { token, idServidor, prefixo } = require('../config.json');
+const { formatarData } = require('./utils');
 const fs = require('fs');
 const path = require('path');
 
@@ -33,6 +34,7 @@ bot.on('message', async mensagem => {
 
     if (comando == null) return;
 
+    console.log(`[${formatarData('DD/MM/YYYY, às HH:mm:ss', new Date())}] - Recebido comando:`, conteudo);
     comando.execute(bot, mensagem, args);
 });
 

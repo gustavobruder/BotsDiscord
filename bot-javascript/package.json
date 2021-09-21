@@ -1,7 +1,7 @@
 {
   "name": "bot-discord",
   "version": "1.0.0",
-  "description": "Um bot simple para o discord",
+  "description": "Um bot simples para o discord",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",

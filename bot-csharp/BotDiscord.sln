@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{9772A6F2-6ACF-47E0-AD51-D5E97AE07527}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotDiscord.Application", "src\BotDiscord.Application\BotDiscord.Application.csproj", "{5F13D776-4AE1-407E-9F1B-46D0349923D1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{A398F783-2779-459C-B416-A383FDF2A565}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5F13D776-4AE1-407E-9F1B-46D0349923D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F13D776-4AE1-407E-9F1B-46D0349923D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F13D776-4AE1-407E-9F1B-46D0349923D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F13D776-4AE1-407E-9F1B-46D0349923D1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5F13D776-4AE1-407E-9F1B-46D0349923D1} = {9772A6F2-6ACF-47E0-AD51-D5E97AE07527}
+	EndGlobalSection
+EndGlobal

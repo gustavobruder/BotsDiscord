@@ -1,0 +1,4 @@
+﻿discord:
+  prefix: 'prefix'
+  token: 'token-discord'
+  id_servidor: 'id-servidor'

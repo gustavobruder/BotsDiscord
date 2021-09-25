@@ -17,18 +17,7 @@ namespace BotDiscord.Application.Commands
         [Command("help")]
         public async Task HelpCommand()
         {
-            var commandTypes = new List<Type>();
-            commandTypes.AddRange(Assembly.GetExecutingAssembly().GetTypes()
-                .Where(type => typeof(CommandModuleBase).IsAssignableFrom(type))
-                .Where(type => !type.IsAbstract && !type.IsInterface)
-                .Where(type => type != typeof(CommandModuleBase))
-            );
-
-            var fields = commandTypes
-                .Select(commandType => (CommandModuleBase) Activator.CreateInstance(commandType))
-                .Select(command => new EmbedFieldBuilder()
-                    .WithName(command?.CommandName)
-                    .WithValue(command?.CommandDescription));
+            var fields = GetAllAvailableBotCommands();
 
             var resposta = new EmbedBuilder()
                 .WithColor(new Color(0, 153, 255))
@@ -42,6 +31,20 @@ namespace BotDiscord.Application.Commands
                 .Build();
 
             var mensagemEnviada = await Context.Channel.SendMessageAsync(null, false, resposta);
+        }
+
+        private IEnumerable<EmbedFieldBuilder> GetAllAvailableBotCommands()
+        {
+            var commands = Assembly.GetExecutingAssembly().GetTypes()
+                .Where(type => typeof(CommandModuleBase).IsAssignableFrom(type))
+                .Where(type => !type.IsAbstract && !type.IsInterface)
+                .Where(type => type != typeof(CommandModuleBase))
+                .Select(commandType => (CommandModuleBase) Activator.CreateInstance(commandType));
+
+            return commands
+                .Select(command => new EmbedFieldBuilder()
+                    .WithName(command?.CommandName)
+                    .WithValue(command?.CommandDescription));
         }
     }
 }

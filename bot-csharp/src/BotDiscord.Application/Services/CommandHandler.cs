@@ -31,7 +31,7 @@ namespace BotDiscord.Application.Services
         private Task OnReady()
         {
             // Get username and tag from bot profile. ex: BotHappy#0690
-            Console.WriteLine($"Bot está online no servidor! Token: ${_configurationRoot["discord:token"]}");
+            Console.WriteLine($"Bot está online no servidor! Token: {_configurationRoot["discord:token"]}");
             Console.WriteLine($"Usuário do bot => {_discord.CurrentUser.Username}#{_discord.CurrentUser.Discriminator}");
             return Task.CompletedTask;
         }

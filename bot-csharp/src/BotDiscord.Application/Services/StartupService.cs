@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using System.Threading.Tasks;
+using BotDiscord.Application.Common;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
@@ -29,7 +30,7 @@ namespace BotDiscord.Application.Services
 
             if (string.IsNullOrEmpty(token))
             {
-                Console.WriteLine("Por favor insira seu Discord Token no arquivo _config.yml");
+                BotLogger.LogInfo("Por favor insira seu Discord Token no arquivo _config.yml");
                 return;
             }
 

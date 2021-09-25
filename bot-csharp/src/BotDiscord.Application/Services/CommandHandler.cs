@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using BotDiscord.Application.Common;
+using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Extensions.Configuration;
@@ -25,38 +27,42 @@ namespace BotDiscord.Application.Services
             _serviceProvider = serviceProvider;
 
             _discord.Ready += OnReady;
+            _discord.Log += Log;
             _discord.MessageReceived += OnMessageReceived;
         }
 
         private Task OnReady()
         {
             // Get username and tag from bot profile. ex: BotHappy#0690
-            Console.WriteLine($"Bot está online no servidor! Token: {_configurationRoot["discord:token"]}");
-            Console.WriteLine($"Usuário do bot => {_discord.CurrentUser.Username}#{_discord.CurrentUser.Discriminator}");
+            BotLogger.LogInfo($"Bot está online no servidor! Token: {_configurationRoot["discord:token"]}");
+            BotLogger.LogInfo($"Usuário do bot => {_discord.CurrentUser.Username}#{_discord.CurrentUser.Discriminator}");
+            return Task.CompletedTask;
+        }
+
+        private Task Log(LogMessage msg)
+        {
+            Console.WriteLine(msg.ToString());
             return Task.CompletedTask;
         }
 
         private async Task OnMessageReceived(SocketMessage arg)
         {
-            var msg = arg as SocketUserMessage;
+            var message = arg as SocketUserMessage;
 
-            if (msg.Author.IsBot) return;
+            if (message == null) return;
+            if (message.Author.IsBot) return;
 
-            var context = new SocketCommandContext(_discord, msg);
+            var posicao = 0;
+            if (!message.HasStringPrefix(_configurationRoot["discord:prefix"], ref posicao)) return;
 
-            int posicao = 0;
+            var context = new SocketCommandContext(_discord, message);
 
-            if (msg.HasStringPrefix(_configurationRoot["discord:prefix"], ref posicao) ||
-                msg.HasMentionPrefix(_discord.CurrentUser, ref posicao))
+            BotLogger.LogInfo($"Executando comando [{message}]...");
+            var result = await _commandService.ExecuteAsync(context, posicao, _serviceProvider);
+
+            if (!result.IsSuccess)
             {
-                var result = await _commandService.ExecuteAsync(context, posicao, _serviceProvider);
-
-                if (!result.IsSuccess)
-                {
-                    var erro = result.Error;
-                    await context.Channel.SendMessageAsync($"Ocorreu um erro: \n{erro}");
-                    Console.WriteLine(erro);
-                }
+                BotLogger.LogInfo($"Ocorreu um erro ao executar o comando [{message}]: {result.Error}");
             }
         }
     }

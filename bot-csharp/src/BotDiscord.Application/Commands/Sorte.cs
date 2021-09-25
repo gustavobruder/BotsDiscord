@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using BotDiscord.Application.Common;
-using Discord;
 using Discord.Commands;
 
 namespace BotDiscord.Application.Commands
@@ -17,14 +16,13 @@ namespace BotDiscord.Application.Commands
             var random = new Random();
             var sorte = random.Next(1, 101);
 
-            var resposta = new EmbedBuilder()
-                .WithColor(CustomColors.Get(random.Next(0, 9)))
+            var resposta = CustomColorEmbed()
                 .WithTitle($"Fala {Context.Message.Author.Username}!")
                 .WithDescription($"Você está com {sorte}% de sorte hoje.")
                 .WithCurrentTimestamp()
                 .Build();
 
-            var mensagemEnviada = await Context.Channel.SendMessageAsync(null, false, resposta);
+            var mensagemEnviada = await SendCustomMessageAsync(resposta);
         }
     }
 }

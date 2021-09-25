@@ -26,7 +26,7 @@ namespace BotDiscord.Application.Commands
                 .WithCurrentTimestamp()
                 .Build();
 
-            var mensagemEnviada = await Context.Channel.SendMessageAsync(null, false, resposta);
+            var mensagemEnviada = await SendCustomMessageAsync(resposta);
         }
     }
 }

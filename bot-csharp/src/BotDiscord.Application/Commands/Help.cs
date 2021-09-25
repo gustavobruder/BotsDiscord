@@ -30,7 +30,7 @@ namespace BotDiscord.Application.Commands
                 .WithFooter("Copyright © | Todos os direitos reservados ", "https://i.imgur.com/wSTFkRM.png")
                 .Build();
 
-            var mensagemEnviada = await Context.Channel.SendMessageAsync(null, false, resposta);
+            var mensagemEnviada = await SendCustomMessageAsync(resposta);
         }
 
         private IEnumerable<EmbedFieldBuilder> GetAllAvailableBotCommands()
